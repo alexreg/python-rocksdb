@@ -55,6 +55,8 @@ cdef extern from "rocksdb/db.h" namespace "rocksdb":
         Range(const Slice&, const Slice&)
 
     cdef cppclass DB:
+        Status Close() nogil except+
+
         Status Put(
             const options.WriteOptions&,
             ColumnFamilyHandle*,
@@ -203,3 +205,8 @@ cdef extern from "rocksdb/db.h" namespace "rocksdb":
             const options.ColumnFamilyOptions&) nogil except+
         string name
         options.ColumnFamilyOptions options
+
+cdef extern from "rocksdb/convenience.h" namespace "rocksdb":
+    void CancelAllBackgroundWork(
+        DB* db,
+        cpp_bool wait) nogil except+
