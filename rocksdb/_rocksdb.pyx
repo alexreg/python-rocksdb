@@ -1672,20 +1672,19 @@ cdef class DB(object):
 
     def __dealloc__(self):
         self.close()
-        
+        if not self.db == NULL:
+            del self.db
+
     def close(self):
         cdef ColumnFamilyOptions copts
         if not self.db == NULL:
             # We have to make sure we delete the handles so rocksdb doesn't
-            # assert when we delete the db
+            # assert when we delete the db.
             self.cf_handles.clear()
             for copts in self.cf_options:
                 if copts:
                     copts.in_use = False
             self.cf_options.clear()
-
-            with nogil:
-                del self.db
 
         if self.opts is not None:
             self.opts.in_use = False
